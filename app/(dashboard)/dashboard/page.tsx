@@ -34,7 +34,7 @@ export default function DashboardPage() {
     <>
       <PageHeader
         title="Good morning, Dr. Vasquez"
-        description="Here is what is happening across St. Meridian Hospital today."
+        description="Here is what is happening across St. City Garden Clinic Hospital today."
       >
         <Button variant="outline" render={<Link href="/reports" />}>
           View reports

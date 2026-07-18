@@ -34,10 +34,10 @@ export function AppSidebar() {
           </span>
           <span className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold text-foreground">
-              Meridian HMS
+              City Garden Clinic HMS
             </span>
             <span className="text-xs text-muted-foreground">
-              St. Meridian Hospital
+              St. City Garden Clinic Hospital
             </span>
           </span>
         </Link>

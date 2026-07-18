@@ -1,4 +1,4 @@
-// Static sample data for the Meridian HMS prototype.
+// Static sample data for the City Garden Clinic HMS prototype.
 // This is a visual demo only — no database or real data is used.
 
 export type PatientStatus = "active" | "admitted" | "discharged" | "inactive"

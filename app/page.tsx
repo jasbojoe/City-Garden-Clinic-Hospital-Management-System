@@ -27,7 +27,7 @@ export default function LoginPage() {
           <span className="flex size-10 items-center justify-center rounded-lg bg-primary-foreground/15">
             <Activity className="size-6" />
           </span>
-          <span className="text-lg font-semibold">Meridian HMS</span>
+          <span className="text-lg font-semibold">City Garden Clinic HMS</span>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -46,7 +46,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-xs text-primary-foreground/70">
-          &copy; 2026 St. Meridian Hospital. All rights reserved.
+          &copy; 2026 St. City Garden Clinic Hospital. All rights reserved.
         </p>
       </section>
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
               <Activity className="size-6" />
             </span>
             <span className="text-lg font-semibold text-foreground">
-              Meridian HMS
+              City Garden Clinic HMS
             </span>
           </div>
 
@@ -79,8 +79,8 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="e.vasquez@meridian.health"
-                  defaultValue="e.vasquez@meridian.health"
+                  placeholder="e.vasquez@City Garden Clinic.health"
+                  defaultValue="e.vasquez@City Garden Clinic.health"
                 />
               </Field>
               <Field>

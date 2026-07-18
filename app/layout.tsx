@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Meridian HMS — Hospital Management System',
+  title: 'City Garden Clinic HMS — Hospital Management System',
   description:
     'A professional hospital management system for patients, appointments, laboratory, pharmacy, billing, and more.',
   generator: 'v0.app',

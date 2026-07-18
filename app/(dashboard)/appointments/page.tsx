@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CalendarPlusIcon, ClockIcon, VideoIcon, StethoscopeIcon } from "lucide-react"
+import { CalendarPlusIcon, ClockIcon, CheckCircleIcon, StethoscopeIcon } from "lucide-react"
 import { PageHeader } from "@/components/hms/page-header"
 import { StatusBadge } from "@/components/hms/status-badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,18 +20,12 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { appointments, doctors, patients, initials } from "@/lib/data"
 import { toast } from "sonner"
 
-const days = ["Mon 15", "Tue 16", "Wed 17", "Thu 18", "Fri 19"]
+const days = ["Mon 14", "Tue 15", "Wed 16", "Thu 17", "Fri 18"]
 
 export default function AppointmentsPage() {
   const [filter, setFilter] = useState<string>("all")
@@ -68,23 +62,19 @@ export default function AppointmentsPage() {
               <ClockIcon className="size-5" />
             </div>
             <div>
-              <p className="text-2xl font-semibold">
-                {appointments.filter((a) => a.status === "Scheduled").length}
-              </p>
-              <p className="text-sm text-muted-foreground">Awaiting confirmation</p>
+              <p className="text-2xl font-semibold">{appointments.filter((a) => a.status === "scheduled").length}</p>
+              <p className="text-sm text-muted-foreground">Awaiting check-in</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex items-center gap-3 py-5">
             <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <VideoIcon className="size-5" />
+              <CheckCircleIcon className="size-5" />
             </div>
             <div>
-              <p className="text-2xl font-semibold">
-                {appointments.filter((a) => a.mode === "Telemedicine").length}
-              </p>
-              <p className="text-sm text-muted-foreground">Telemedicine</p>
+              <p className="text-2xl font-semibold">{appointments.filter((a) => a.status === "completed").length}</p>
+              <p className="text-sm text-muted-foreground">Completed</p>
             </div>
           </CardContent>
         </Card>
@@ -97,35 +87,32 @@ export default function AppointmentsPage() {
             <Tabs value={filter} onValueChange={setFilter}>
               <TabsList>
                 <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="Scheduled">Scheduled</TabsTrigger>
-                <TabsTrigger value="Confirmed">Confirmed</TabsTrigger>
-                <TabsTrigger value="Completed">Completed</TabsTrigger>
+                <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+                <TabsTrigger value="checked-in">Checked in</TabsTrigger>
+                <TabsTrigger value="completed">Completed</TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
+            {filtered.length === 0 && (
+              <p className="py-6 text-center text-sm text-muted-foreground">No appointments in this view.</p>
+            )}
             {filtered.map((a) => (
-              <div
-                key={a.id}
-                className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3"
-              >
+              <div key={a.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3">
                 <div className="flex w-16 shrink-0 flex-col items-center rounded-md bg-muted px-2 py-1.5">
                   <span className="text-sm font-semibold text-foreground">{a.time}</span>
-                  <span className="text-xs text-muted-foreground">{a.duration}m</span>
+                  <span className="text-xs text-muted-foreground">{a.type}</span>
                 </div>
                 <Avatar className="size-9">
-                  <AvatarFallback>{initials(a.patientName)}</AvatarFallback>
+                  <AvatarFallback>{initials(a.patient)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{a.patientName}</p>
+                  <p className="truncate font-medium">{a.patient}</p>
                   <p className="truncate text-sm text-muted-foreground">
                     {a.doctor} · {a.department}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={a.mode} />
-                  <StatusBadge status={a.status} />
-                </div>
+                <StatusBadge status={a.status} />
               </div>
             ))}
           </CardContent>
@@ -143,10 +130,7 @@ export default function AppointmentsPage() {
                   <span className="text-xs text-muted-foreground">{6 + i * 3} appts</span>
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${40 + i * 12}%` }}
-                  />
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${40 + i * 12}%` }} />
                 </div>
                 {i < days.length - 1 && <Separator className="mt-4" />}
               </div>
@@ -170,7 +154,14 @@ function NewAppointmentDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button><CalendarPlusIcon data-icon="inline-start" />New appointment</Button>} />
+      <DialogTrigger
+        render={
+          <Button>
+            <CalendarPlusIcon data-icon="inline-start" />
+            New appointment
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>New appointment</DialogTitle>
@@ -218,13 +209,15 @@ function NewAppointmentDialog() {
             </Field>
           </div>
           <Field>
-            <FieldLabel>Mode</FieldLabel>
-            <Select defaultValue="In-person">
+            <FieldLabel>Type</FieldLabel>
+            <Select defaultValue="Consultation">
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="In-person">In-person</SelectItem>
+                <SelectItem value="Consultation">Consultation</SelectItem>
+                <SelectItem value="Follow-up">Follow-up</SelectItem>
+                <SelectItem value="Procedure">Procedure</SelectItem>
                 <SelectItem value="Telemedicine">Telemedicine</SelectItem>
               </SelectContent>
             </Select>

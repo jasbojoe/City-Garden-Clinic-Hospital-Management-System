@@ -159,17 +159,17 @@ export function DepartmentChart() {
   ]
 
   return (
-    <ChartContainer
-      config={config}
-      className="mx-auto aspect-square h-[260px]"
-    >
-      <PieChart>
+    <ChartContainer config={config} className="mx-auto h-[260px] w-full">
+      <PieChart margin={{ top: 0, bottom: 0 }}>
         <ChartTooltip content={<ChartTooltipContent hideLabel />} />
         <Pie
           data={departmentDistribution}
           dataKey="patients"
           nameKey="department"
-          innerRadius={58}
+          cx="50%"
+          cy="45%"
+          innerRadius={50}
+          outerRadius={85}
           strokeWidth={4}
         >
           {departmentDistribution.map((entry, index) => (

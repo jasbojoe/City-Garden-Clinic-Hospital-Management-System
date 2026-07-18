@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { queueEntries as seed, initials, type QueueEntry } from "@/lib/data"
+import { queue as seed, initials, type QueueEntry, type QueueStatus } from "@/lib/data"
 import { toast } from "sonner"
 
 export default function QueuePage() {
@@ -18,17 +18,16 @@ export default function QueuePage() {
     setEntries((prev) =>
       prev.map((e) => {
         if (e.id !== id) return e
-        const next =
-          e.status === "Waiting" ? "In Consultation" : e.status === "In Consultation" ? "Completed" : "Completed"
+        const next: QueueStatus = e.status === "waiting" ? "in-consultation" : "completed"
         return { ...e, status: next }
-      })
+      }),
     )
     toast.success("Queue updated")
   }
 
-  const waiting = entries.filter((e) => e.status === "Waiting")
-  const active = entries.filter((e) => e.status === "In Consultation")
-  const done = entries.filter((e) => e.status === "Completed")
+  const waiting = entries.filter((e) => e.status === "waiting")
+  const active = entries.filter((e) => e.status === "in-consultation")
+  const done = entries.filter((e) => e.status === "completed")
   const avgWait = Math.round(waiting.reduce((s, e) => s + e.waitMinutes, 0) / (waiting.length || 1))
 
   return (
@@ -102,20 +101,18 @@ function QueueColumn({
         <Badge variant="secondary">{entries.length}</Badge>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {entries.length === 0 && (
-          <p className="py-6 text-center text-sm text-muted-foreground">No patients</p>
-        )}
+        {entries.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No patients</p>}
         {entries.map((e) => (
           <div key={e.id} className="rounded-lg border border-border bg-card p-3">
             <div className="flex items-center gap-3">
               <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
-                {e.token}
+                {e.number}
               </div>
               <Avatar className="size-9">
-                <AvatarFallback>{initials(e.patientName)}</AvatarFallback>
+                <AvatarFallback>{initials(e.patient)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{e.patientName}</p>
+                <p className="truncate font-medium">{e.patient}</p>
                 <p className="truncate text-sm text-muted-foreground">{e.doctor}</p>
               </div>
             </div>

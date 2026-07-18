@@ -51,6 +51,8 @@ export const doctors: Doctor[] = [
   { id: "d4", name: "Dr. Thomas Reed", department: "General Medicine", specialty: "Internal Medicine" },
   { id: "d5", name: "Dr. Nadia Petrov", department: "Dermatology", specialty: "Clinical Dermatology" },
   { id: "d6", name: "Dr. Samuel Adeyemi", department: "Pulmonology", specialty: "Respiratory Care" },
+  { id: "d7", name: "Dr. Abdul Sesay Junior", department: "Administration", specialty: "Admin Doctor" },
+  { id: "d8", name: "Dr. Abdul Daniel Sesay", department: "Administration", specialty: "Admin Doctor" },
 ]
 
 export const departments = [
@@ -260,6 +262,8 @@ export const staff: Staff[] = [
   { id: "s6", employeeNo: "EMP-0088", name: "Linda Park", role: "Pharmacist", department: "Pharmacy", phone: "+1 (555) 300-6675", status: "active" },
   { id: "s7", employeeNo: "EMP-0093", name: "Dr. Thomas Reed", role: "Physician", department: "General Medicine", phone: "+1 (555) 300-7786", status: "active" },
   { id: "s8", employeeNo: "EMP-0102", name: "Omar Haddad", role: "Billing Officer", department: "Administration", phone: "+1 (555) 300-8897", status: "inactive" },
+  { id: "s9", employeeNo: "EMP-0110", name: "Dr. Abdul Sesay Junior", role: "Admin Doctor", department: "Administration", phone: "+1 (555) 300-9901", status: "active" },
+  { id: "s10", employeeNo: "EMP-0111", name: "Dr. Abdul Daniel Sesay", role: "Admin Doctor", department: "Administration", phone: "+1 (555) 300-9902", status: "active" },
 ]
 
 // Chart data

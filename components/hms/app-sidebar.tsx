@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Activity, LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 
 import {
   Sidebar,
@@ -29,15 +30,22 @@ export function AppSidebar() {
           href="/dashboard"
           className="flex items-center gap-2.5 px-1 py-1.5"
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Activity className="size-5" />
+          <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-card">
+            <Image
+              src="/images/city-garden-clinic-logo.png"
+              alt="City Garden Clinic logo"
+              width={36}
+              height={36}
+              className="size-9 object-contain"
+              priority
+            />
           </span>
           <span className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold text-foreground">
-              City Garden Clinic HMS
+              City Garden Clinic
             </span>
             <span className="text-xs text-muted-foreground">
-              St. City Garden Clinic Hospital
+              Hospital Management System
             </span>
           </span>
         </Link>

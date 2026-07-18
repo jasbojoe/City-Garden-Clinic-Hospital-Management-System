@@ -1,11 +1,6 @@
 import Link from "next/link"
-import {
-  Activity,
-  ArrowRight,
-  ShieldCheck,
-  Stethoscope,
-  Users,
-} from "lucide-react"
+import Image from "next/image"
+import { ArrowRight, ShieldCheck, Stethoscope, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -24,10 +19,17 @@ export default function LoginPage() {
       {/* Branding panel */}
       <section className="relative hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex lg:w-[45%] xl:w-1/2">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-10 items-center justify-center rounded-lg bg-primary-foreground/15">
-            <Activity className="size-6" />
+          <span className="flex size-11 items-center justify-center overflow-hidden rounded-lg bg-primary-foreground">
+            <Image
+              src="/images/city-garden-clinic-logo.png"
+              alt="City Garden Clinic logo"
+              width={44}
+              height={44}
+              className="size-11 object-contain"
+              priority
+            />
           </span>
-          <span className="text-lg font-semibold">City Garden Clinic HMS</span>
+          <span className="text-lg font-semibold">City Garden Clinic</span>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -46,7 +48,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-xs text-primary-foreground/70">
-          &copy; 2026 St. City Garden Clinic Hospital. All rights reserved.
+          &copy; 2026 City Garden Clinic Hospital. All rights reserved.
         </p>
       </section>
 
@@ -54,11 +56,18 @@ export default function LoginPage() {
       <section className="flex flex-1 items-center justify-center bg-background p-6 sm:p-10">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-2.5 lg:hidden">
-            <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Activity className="size-6" />
+            <span className="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-card">
+              <Image
+                src="/images/city-garden-clinic-logo.png"
+                alt="City Garden Clinic logo"
+                width={40}
+                height={40}
+                className="size-10 object-contain"
+                priority
+              />
             </span>
             <span className="text-lg font-semibold text-foreground">
-              City Garden Clinic HMS
+              City Garden Clinic
             </span>
           </div>
 
@@ -79,8 +88,8 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="e.vasquez@City Garden Clinic.health"
-                  defaultValue="e.vasquez@City Garden Clinic.health"
+                  placeholder="a.sesay@citygardenclinic.health"
+                  defaultValue="a.sesay@citygardenclinic.health"
                 />
               </Field>
               <Field>

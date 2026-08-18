@@ -111,13 +111,13 @@ export default function SettingsPage() {
                   </Field>
                   <Field>
                     <FieldLabel>Currency</FieldLabel>
-                    <Select defaultValue="usd">
+                    <Select defaultValue="sle">
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="sle">SLE (Le)</SelectItem>
                         <SelectItem value="usd">USD ($)</SelectItem>
-                        <SelectItem value="eur">EUR (€)</SelectItem>
                         <SelectItem value="gbp">GBP (£)</SelectItem>
                       </SelectContent>
                     </Select>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
                 </div>
                 <Field>
                   <FieldLabel>Address</FieldLabel>
-                  <Input defaultValue="128 Wellness Boulevard, Springfield" />
+                  <Input defaultValue="15 Circular Road, Freetown, Sierra Leone" />
                   <FieldDescription>Shown on invoices and patient documents.</FieldDescription>
                 </Field>
               </FieldGroup>

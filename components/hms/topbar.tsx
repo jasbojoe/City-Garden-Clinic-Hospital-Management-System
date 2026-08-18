@@ -40,6 +40,10 @@ export function Topbar() {
       <SidebarTrigger className="text-muted-foreground" />
       <Separator orientation="vertical" className="h-6" />
       <h1 className="text-base font-semibold text-foreground">{title}</h1>
+      <span className="hidden items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground lg:inline-flex">
+        <span className="size-1.5 rounded-full bg-amber-500" />
+        Prototype Demo — Sample Data
+      </span>
 
       <div className="ml-auto flex items-center gap-2">
         <InputGroup className="hidden w-64 md:flex">

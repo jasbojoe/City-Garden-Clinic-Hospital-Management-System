@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, LogOut, Search, Settings, UserRound } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Bell, ChevronDown, LogOut, Search, Settings, ShieldCheck, UserRound } from "lucide-react"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
@@ -32,8 +34,11 @@ function useTitle() {
   return match?.title ?? "Dashboard"
 }
 
+const dashboardRoles = ["Admin Doctor", "Reception", "Nurse", "Laboratory", "Pharmacy", "Billing"]
+
 export function Topbar() {
   const title = useTitle()
+  const [role, setRole] = useState("Admin Doctor")
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-sm md:px-6">
@@ -52,6 +57,30 @@ export function Topbar() {
             <Search />
           </InputGroupAddon>
         </InputGroup>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" className="hidden h-9 gap-2 px-3 sm:inline-flex" aria-label="Switch dashboard role">
+                <ShieldCheck data-icon="inline-start" />
+                <span>{role}</span>
+                <ChevronDown data-icon="inline-end" />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>View as role</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {dashboardRoles.map((option) => (
+                <DropdownMenuItem key={option} onClick={() => { setRole(option); toast.success(`Dashboard switched to ${option}`) }}>
+                  <ShieldCheck />
+                  {option}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button
           variant="ghost"

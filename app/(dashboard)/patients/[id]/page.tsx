@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/hms/status-badge"
+import { PatientQrCard } from "@/components/hms/patient-qr-card"
 import {
   appointments,
   currency,
@@ -140,9 +141,9 @@ export default async function PatientProfilePage({
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="mt-4">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
+      <TabsContent value="overview" className="mt-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+          <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
               </CardHeader>
@@ -191,9 +192,10 @@ export default async function PatientProfilePage({
                   <span className="text-foreground">{patient.lastVisit}</span>
                 </div>
               </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+          </Card>
+          <PatientQrCard patient={patient} />
+        </div>
+      </TabsContent>
 
         <TabsContent value="appointments" className="mt-4">
           <Card>

@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, LogOut, Search, Settings, UserRound } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Bell, ChevronDown, LogOut, Search, Settings, ShieldCheck, UserRound } from "lucide-react"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
@@ -32,14 +34,21 @@ function useTitle() {
   return match?.title ?? "Dashboard"
 }
 
+const dashboardRoles = ["Admin Doctor", "Reception", "Nurse", "Laboratory", "Pharmacy", "Billing"]
+
 export function Topbar() {
   const title = useTitle()
+  const [role, setRole] = useState("Admin Doctor")
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-sm md:px-6">
       <SidebarTrigger className="text-muted-foreground" />
       <Separator orientation="vertical" className="h-6" />
       <h1 className="text-base font-semibold text-foreground">{title}</h1>
+      <span className="hidden items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground lg:inline-flex">
+        <span className="size-1.5 rounded-full bg-amber-500" />
+        Prototype Demo — Sample Data
+      </span>
 
       <div className="ml-auto flex items-center gap-2">
         <InputGroup className="hidden w-64 md:flex">
@@ -48,6 +57,30 @@ export function Topbar() {
             <Search />
           </InputGroupAddon>
         </InputGroup>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="outline" className="hidden h-9 gap-2 px-3 sm:inline-flex" aria-label="Switch dashboard role">
+                <ShieldCheck data-icon="inline-start" />
+                <span>{role}</span>
+                <ChevronDown data-icon="inline-end" />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>View as role</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {dashboardRoles.map((option) => (
+                <DropdownMenuItem key={option} onClick={() => { setRole(option); toast.success(`Dashboard switched to ${option}`) }}>
+                  <ShieldCheck />
+                  {option}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button
           variant="ghost"

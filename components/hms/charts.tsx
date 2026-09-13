@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/chart"
 import {
   appointmentsByDay,
+  currency,
+  currencyCompact,
   departmentDistribution,
   labActivityData,
   patientVisitsData,
@@ -118,13 +120,13 @@ export function RevenueChart() {
         <YAxis
           tickLine={false}
           axisLine={false}
-          width={40}
-          tickFormatter={(v) => `$${compact(v)}`}
+          width={56}
+          tickFormatter={(v) => currencyCompact(v)}
         />
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => `$${Number(value).toLocaleString()}`}
+              formatter={(value) => currency(Number(value))}
             />
           }
         />
@@ -219,13 +221,13 @@ export function PharmacySalesChart() {
         <YAxis
           tickLine={false}
           axisLine={false}
-          width={40}
-          tickFormatter={(v) => `$${compact(v)}`}
+          width={56}
+          tickFormatter={(v) => currencyCompact(v)}
         />
         <ChartTooltip
           content={
             <ChartTooltipContent
-              formatter={(value) => `$${Number(value).toLocaleString()}`}
+              formatter={(value) => currency(Number(value))}
             />
           }
         />

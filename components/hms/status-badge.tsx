@@ -43,6 +43,13 @@ const statusMap: Record<string, { tone: Tone; label?: string }> = {
   observation: { tone: "amber" },
   critical: { tone: "red" },
   "on-leave": { tone: "amber", label: "On leave" },
+  // record migration
+  "awaiting-scan": { tone: "slate", label: "Awaiting scan" },
+  scanned: { tone: "blue" },
+  processing: { tone: "teal" },
+  "needs-review": { tone: "amber", label: "Needs review" },
+  verified: { tone: "green" },
+  rejected: { tone: "red" },
 }
 
 function humanize(value: string) {

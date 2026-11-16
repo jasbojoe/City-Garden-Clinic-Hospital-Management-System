@@ -5,8 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/hms/page-header"
 import { PatientsTable } from "@/components/hms/patients-table"
+import { ErrorState } from "@/components/hms/workflow-states"
+import { getPatients } from "@/lib/services/patients"
 
-export default function PatientsPage() {
+export const dynamic = "force-dynamic"
+
+export default async function PatientsPage() {
+  const result = await getPatients()
+
   return (
     <>
       <PageHeader
@@ -23,11 +29,15 @@ export default function PatientsPage() {
         </Button>
       </PageHeader>
 
-      <Card>
-        <CardContent className="p-4 md:p-6">
-          <PatientsTable />
-        </CardContent>
-      </Card>
+      {result.error ? (
+        <ErrorState message={result.error.message} />
+      ) : (
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <PatientsTable patients={result.data} />
+          </CardContent>
+        </Card>
+      )}
     </>
   )
 }

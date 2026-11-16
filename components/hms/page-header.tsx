@@ -19,11 +19,13 @@ export function PageHeader({
   title,
   description,
   breadcrumbs,
+  actions,
   children,
 }: {
   title: string
   description?: string
   breadcrumbs?: Crumb[]
+  actions?: ReactNode
   children?: ReactNode
 }) {
   return (
@@ -67,8 +69,8 @@ export function PageHeader({
             </p>
           ) : null}
         </div>
-        {children ? (
-          <div className="flex flex-wrap items-center gap-2">{children}</div>
+        {actions || children ? (
+          <div className="flex flex-wrap items-center gap-2">{actions ?? children}</div>
         ) : null}
       </div>
     </div>

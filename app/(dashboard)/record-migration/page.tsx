@@ -104,7 +104,7 @@ export default function RecordMigrationPage() {
             </CardDescription>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Select value={status} onValueChange={setStatus}>
+            <Select value={status} onValueChange={(value) => value && setStatus(value)}>
               <SelectTrigger className="w-full" aria-label="Filter by status">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -117,7 +117,7 @@ export default function RecordMigrationPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={department} onValueChange={setDepartment}>
+            <Select value={department} onValueChange={(value) => value && setDepartment(value)}>
               <SelectTrigger className="w-full" aria-label="Filter by department">
                 <SelectValue placeholder="Department" />
               </SelectTrigger>
@@ -130,7 +130,7 @@ export default function RecordMigrationPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={assignee} onValueChange={setAssignee}>
+            <Select value={assignee} onValueChange={(value) => value && setAssignee(value)}>
               <SelectTrigger className="w-full" aria-label="Filter by staff">
                 <SelectValue placeholder="Assigned staff" />
               </SelectTrigger>

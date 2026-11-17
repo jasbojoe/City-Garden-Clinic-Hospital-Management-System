@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
+import { getAuthCallbackUrl } from "@/lib/supabase/config"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -20,12 +21,8 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true)
     try {
       const supabase = createClient()
-      const callbackUrl = new URL(
-        process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? `${window.location.origin}/auth/callback`,
-      )
-      callbackUrl.searchParams.set("next", "/auth/reset-password")
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: callbackUrl.toString(),
+        redirectTo: getAuthCallbackUrl("/auth/reset-password"),
       })
       if (resetError) throw resetError
       setMessage("If an account is eligible, password reset instructions will be sent to that address.")

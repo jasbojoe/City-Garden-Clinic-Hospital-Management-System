@@ -3,7 +3,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
 import { Bell, ChevronDown, LogOut, Search, Settings, ShieldCheck, UserRound } from "lucide-react"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -38,7 +40,19 @@ const dashboardRoles = ["Admin Doctor", "Reception", "Nurse", "Laboratory", "Pha
 
 export function Topbar() {
   const title = useTitle()
+  const router = useRouter()
   const [role, setRole] = useState("Admin Doctor")
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      toast.error("Unable to sign out. Please try again.")
+      return
+    }
+    router.replace("/")
+    router.refresh()
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur-sm md:px-6">
@@ -125,7 +139,7 @@ export function Topbar() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" render={<Link href="/" />}>
+            <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
               <LogOut />
               Sign out
             </DropdownMenuItem>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useTransition, type FormEvent } from "react"
 import Link from "next/link"
 import {
   ChevronLeft,
@@ -42,18 +42,36 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/hms/status-badge"
+import { toast } from "sonner"
+import { searchPatientsAction } from "@/app/(dashboard)/patients/actions"
 import { initials, type Patient } from "@/lib/data"
 
 const PAGE_SIZE = 6
 
 export function PatientsTable({ patients }: { patients: Patient[] }) {
   const [query, setQuery] = useState("")
+  const [records, setRecords] = useState<Patient[] | null>(null)
+  const [isSearching, startSearch] = useTransition()
   const [status, setStatus] = useState("all")
   const [department, setDepartment] = useState("all")
   const [page, setPage] = useState(1)
+  const visiblePatients = records ?? patients
+
+  async function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    startSearch(async () => {
+      const result = await searchPatientsAction({ query, status: status as Patient["status"] | "all" })
+      if (result.error) {
+        toast.error("Patient search failed", { description: result.error })
+        return
+      }
+      setRecords(result.data)
+      setPage(1)
+    })
+  }
 
   const filtered = useMemo(() => {
-    return patients.filter((p) => {
+    return visiblePatients.filter((p) => {
       const matchesQuery =
         p.name.toLowerCase().includes(query.toLowerCase()) ||
         p.mrn.toLowerCase().includes(query.toLowerCase())
@@ -61,7 +79,7 @@ export function PatientsTable({ patients }: { patients: Patient[] }) {
       const matchesDept = department === "all" || p.department === department
       return matchesQuery && matchesStatus && matchesDept
     })
-  }, [query, status, department])
+  }, [visiblePatients, query, status, department])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const current = Math.min(page, totalPages)
@@ -81,22 +99,28 @@ export function PatientsTable({ patients }: { patients: Patient[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        <InputGroup className="md:max-w-xs">
-          <InputGroupInput
-            placeholder="Search by name or MRN..."
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value)
-              setPage(1)
-            }}
-          />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-        </InputGroup>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <form onSubmit={handleSearch} className="flex items-center gap-2">
+          <InputGroup className="md:max-w-xs">
+            <InputGroupInput
+              aria-label="Search patients by name or medical record number"
+              placeholder="Search by name or MRN..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value)
+                setPage(1)
+              }}
+            />
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+          </InputGroup>
+          <Button type="submit" variant="outline" disabled={isSearching}>
+            {isSearching ? "Searching…" : "Search"}
+          </Button>
+        </form>
 
-        <div className="flex items-center gap-2 md:ml-auto">
+        <div className="flex items-center gap-2 lg:ml-auto">
           <Select value={status} onValueChange={resetPage(setStatus)}>
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Status" />

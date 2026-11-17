@@ -3,7 +3,7 @@
 | Module | Planned tables | Current status |
 | --- | --- | --- |
 | Staff and access | `staff_profiles`, `staff_facilities`, `roles`, `permissions`, `role_permissions`, `staff_roles` | Types and permission codes prepared; no database or auth actions yet |
-| Patients | `patients`, `patient_identifiers`, `patient_contacts`, `patient_allergies` | Typed mock-backed reads and Zod validation prepared; CRUD not connected |
+| Patients | `patients`, `patient_identifiers`, `patient_contacts`, `patient_allergies` | Live schema has a permission-checked transactional registration RPC for a patient and optional emergency contact; full application CRUD, duplicate detection, and account-tested audit behavior remain pending |
 | Appointments and queue | `appointments`, `queue_entries` | Domain types prepared; existing screens still use demo fixtures |
 | Consultations | `encounters`, `vital_signs`, `clinical_notes` | Demo encounter history remains; no clinical writes |
 | Laboratory | `lab_orders`, `lab_results` | Existing demo workflow only |

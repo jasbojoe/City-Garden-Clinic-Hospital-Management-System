@@ -15,4 +15,4 @@ Authorization is intended to combine an active staff profile, a facility members
 - Pin `search_path` to an empty value in security-definer functions and fully qualify all objects.
 - Revoke unnecessary grants; do not use service-role credentials in browser code.
 
-No RLS policy has been applied or verified yet. The Supabase MCP schema snapshot is currently failing; do not enable backend mode until policies are reviewed and tested against the live project.
+Live inspection confirmed RLS is enabled on the inspected operational tables and found facility-/permission-scoped policies. The `register_patient` RPC rechecks `patients.register` within the database and is executable only by authenticated callers; it is `SECURITY DEFINER` with an empty `search_path`. The first-super-administrator bootstrap is not part of the public registration path. These checks are not a substitute for tests using unauthenticated, receptionist, clinician, and administrator identities. Keep backend mode disabled until authentication, account provisioning, RLS behavior, and route-level data sourcing have been exercised with approved test accounts.

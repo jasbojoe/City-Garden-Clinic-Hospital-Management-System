@@ -1,6 +1,6 @@
-# Database schema (proposed)
+# Database schema (live foundation)
 
-This document describes the target foundation. It is not an applied migration and must not be treated as an operational schema. Before any DDL, inspect the connected Supabase project through its MCP to detect existing objects and policies; the schema inspection currently errors.
+The connected Supabase project was inspected before applying incremental changes. The schema already contains facility, staff, authorization, patient registry, and audit tables, with RLS enabled on the inspected operational tables. Existing policies use facility access and permission predicates; policy behavior still requires testing with representative authenticated staff accounts. This file records observed foundations and must not be treated as a complete schema specification.
 
 ## Facility and department
 
@@ -30,4 +30,4 @@ Appointments, queue entries, encounters, vital-sign observations, clinical notes
 
 ## Required constraints and indexes
 
-Use UUID primary keys, FK constraints, unique facility-scoped identifiers, checks for valid statuses and nonnegative money, indexes on foreign keys and common facility/status/search columns, and consistent `created_at`/`updated_at` handling. Enable RLS on every operational table and grant only required operations. Exact DDL and policy review are pending live-schema discovery.
+Use UUID primary keys, FK constraints, unique facility-scoped identifiers, checks for valid statuses and nonnegative money, indexes on foreign keys and common facility/status/search columns, and consistent `created_at`/`updated_at` handling. Enable RLS on every operational table and grant only required operations. Incremental migrations in `supabase/migrations/` add covering indexes for eight foreign keys and a permission-checked, transactional `register_patient` RPC that creates a patient and optional emergency contact together. Contact inserts are audited. These migrations were applied to the connected Supabase project. The remaining schema, constraints, role matrix, and RLS behavior still need a full account-based review.

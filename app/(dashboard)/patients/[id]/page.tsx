@@ -41,6 +41,8 @@ import {
   patients,
 } from "@/lib/data"
 import { getPatientAuditEvents, getPatientEncounters } from "@/lib/hms-service"
+import { getPatientById } from "@/lib/services/patients"
+import { dataMode } from "@/lib/services/result"
 
 export default async function PatientProfilePage({
   params,
@@ -48,8 +50,43 @@ export default async function PatientProfilePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const patient = patients.find((p) => p.id === id)
+  const backendMode = dataMode() === "supabase"
+  const patientResult = backendMode ? await getPatientById(id) : null
+  if (patientResult?.error) {
+    return (
+      <Card>
+        <CardHeader><CardTitle>Patient record unavailable</CardTitle><CardDescription>{patientResult.error.message}</CardDescription></CardHeader>
+      </Card>
+    )
+  }
+  const patient = backendMode ? patientResult?.data : patients.find((p) => p.id === id)
   if (!patient) notFound()
+
+  if (backendMode) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="icon" render={<Link href="/patients" aria-label="Back to patients" />}><ArrowLeft /></Button>
+          <span className="text-sm text-muted-foreground">Patients / {patient.name}</span>
+        </div>
+        <Card>
+          <CardHeader><CardTitle>{patient.name}</CardTitle><CardDescription>Patient demographics from the protected Supabase registry.</CardDescription></CardHeader>
+          <CardContent className="grid gap-4 text-sm sm:grid-cols-2">
+            <p><span className="text-muted-foreground">Medical record number</span><br />{patient.mrn}</p>
+            <p><span className="text-muted-foreground">Date of birth</span><br />{patient.dob || "Not recorded"}</p>
+            <p><span className="text-muted-foreground">Gender</span><br />{patient.gender}</p>
+            <p><span className="text-muted-foreground">Phone</span><br />{patient.phone || "Not recorded"}</p>
+            <p><span className="text-muted-foreground">Email</span><br />{patient.email || "Not recorded"}</p>
+            <p><span className="text-muted-foreground">Address</span><br />{patient.address || "Not recorded"}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Clinical records unavailable</CardTitle><CardDescription>These workflows are not connected to Supabase yet.</CardDescription></CardHeader>
+          <CardContent className="text-sm text-muted-foreground">Appointments, encounters, laboratory results, prescriptions, invoices, insurance, and documents are intentionally not shown here to avoid presenting demo records as real clinical data.</CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const patientAppointments = appointments.filter(
     (a) => a.mrn === patient.mrn,

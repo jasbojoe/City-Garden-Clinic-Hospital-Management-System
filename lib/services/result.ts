@@ -1,5 +1,5 @@
 export type ServiceError = {
-  code: 'VALIDATION_ERROR' | 'BACKEND_NOT_READY' | 'DEMO_READ_ONLY'
+  code: 'VALIDATION_ERROR' | 'BACKEND_NOT_READY' | 'DEMO_READ_ONLY' | 'SERVICE_ERROR'
   message: string
 }
 

@@ -5,7 +5,7 @@ An existing Next.js 16 application for City Garden Clinic. The approved HMS fron
 ## Modes
 
 - **Demo mode** (`HMS_DATA_MODE=demo`, the default): synthetic sample records from `lib/data.ts`; service-layer writes are rejected and no patient data is persisted.
-- **Supabase mode** (`HMS_DATA_MODE=supabase`): reserved for the protected database-backed services. Do not enable until the migration, Row Level Security (RLS), and staff authentication have been installed and verified. Requests fail closed rather than falling back to sample data.
+- **Supabase mode** (`HMS_DATA_MODE=supabase`): uses the connected patient registry services for authorized facility-scoped patient reads, search, registration, emergency contacts, and allergies. Enable only after Supabase Auth signup policy, staff provisioning, RLS, and account-based tests are verified. Other modules remain unconnected and must not be treated as real clinical data. Requests fail closed rather than falling back to sample data.
 
 ## Requirements
 
@@ -31,4 +31,4 @@ Supabase clients read `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLI
 - `lib/permissions/` — permission codes and presentation helper
 - `lib/validators.ts` — Zod input validation
 - `docs/` — architecture, proposed schema, permissions, and implementation status
-- `supabase/migrations/` — database migrations (pending Supabase MCP schema verification)
+- `supabase/migrations/` — versioned database migrations, including the applied foundation and patient-registry hardening migrations

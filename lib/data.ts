@@ -7,7 +7,7 @@ export type Patient = {
   id: string
   mrn: string
   name: string
-  gender: "Male" | "Female"
+  gender: "Male" | "Female" | "Other"
   age: number
   dob: string
   phone: string

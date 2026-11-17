@@ -42,11 +42,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/hms/status-badge"
-import { initials, patients } from "@/lib/data"
+import { initials, type Patient } from "@/lib/data"
 
 const PAGE_SIZE = 6
 
-export function PatientsTable() {
+export function PatientsTable({ patients }: { patients: Patient[] }) {
   const [query, setQuery] = useState("")
   const [status, setStatus] = useState("all")
   const [department, setDepartment] = useState("all")
@@ -72,9 +72,9 @@ export function PatientsTable() {
 
   const depts = Array.from(new Set(patients.map((p) => p.department))).sort()
 
-  function resetPage<T>(setter: (v: T) => void) {
-    return (value: T) => {
-      setter(value)
+  function resetPage<T>(setter: (value: T) => void) {
+    return (value: T | null) => {
+      if (value !== null) setter(value)
       setPage(1)
     }
   }

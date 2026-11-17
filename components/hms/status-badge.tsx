@@ -18,7 +18,9 @@ const statusMap: Record<string, { tone: Tone; label?: string }> = {
   admitted: { tone: "blue" },
   discharged: { tone: "slate" },
   inactive: { tone: "slate" },
-  // appointments
+  // encounters / appointments
+  open: { tone: "teal" },
+  draft: { tone: "amber" },
   scheduled: { tone: "blue" },
   "checked-in": { tone: "teal", label: "Checked in" },
   completed: { tone: "green" },

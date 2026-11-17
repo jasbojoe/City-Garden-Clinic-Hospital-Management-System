@@ -1,33 +1,34 @@
-# City-Garden-Clinic-Hospital-Management-System
+# City Garden Clinic Hospital Management System
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+An existing Next.js 16 application for City Garden Clinic. The approved HMS frontend remains available in read-only demo mode while database schema, authentication, and authorization are prepared.
 
-## Built with v0
+## Modes
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+- **Demo mode** (`HMS_DATA_MODE=demo`, the default): synthetic sample records from `lib/data.ts`; service-layer writes are rejected and no patient data is persisted.
+- **Supabase mode** (`HMS_DATA_MODE=supabase`): reserved for the protected database-backed services. Do not enable until the migration, Row Level Security (RLS), and staff authentication have been installed and verified. Requests fail closed rather than falling back to sample data.
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_uI4XDCle6pEKGUelrmjQZyH7K3rA)
+## Requirements
 
-## Getting Started
+- Node.js supported by Next.js 16
+- pnpm (use the version in `package.json`/lockfile)
 
-First, run the development server:
+## Local development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+1. Install dependencies with `pnpm install`.
+2. Copy `.env.example` to `.env.local` if you want to configure a local instance. Keep `HMS_DATA_MODE=demo` unless the backend has been fully initialized.
+3. Start the app with `pnpm dev`.
+4. Run `pnpm typecheck` and `pnpm build` before submitting changes.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Supabase clients read `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`). Never place a service-role/secret key in browser code or commit credentials. The connected Vercel integration injects values in the hosted project; credentials alone do not mean schema, RLS, or auth workflows are ready.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project layout
 
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+- `app/` — App Router pages and routes
+- `components/hms/` — reusable HMS components
+- `lib/data.ts` — synthetic demo fixtures
+- `lib/services/` — typed access layer; demo reads and explicit unavailable-backend results
+- `lib/supabase/` — SSR/browser client setup
+- `lib/permissions/` — permission codes and presentation helper
+- `lib/validators.ts` — Zod input validation
+- `docs/` — architecture, proposed schema, permissions, and implementation status
+- `supabase/migrations/` — database migrations (pending Supabase MCP schema verification)

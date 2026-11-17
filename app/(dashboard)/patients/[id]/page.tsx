@@ -40,6 +40,7 @@ import {
   labTests,
   patients,
 } from "@/lib/data"
+import { getPatientAuditEvents, getPatientEncounters } from "@/lib/hms-service"
 
 export default async function PatientProfilePage({
   params,
@@ -55,6 +56,8 @@ export default async function PatientProfilePage({
   )
   const patientLabs = labTests.filter((l) => l.mrn === patient.mrn)
   const patientInvoices = invoices.filter((i) => i.mrn === patient.mrn)
+  const patientEncounters = getPatientEncounters(patient.id)
+  const patientAuditEvents = getPatientAuditEvents(patient.id)
 
   const history = [
     { date: "2026-07-14", title: "Hypertension follow-up", doctor: "Dr. Elena Vasquez", note: "BP controlled on current medication. Continue Atorvastatin." },
@@ -139,6 +142,8 @@ export default async function PatientProfilePage({
           <TabsTrigger value="labs">Lab Results</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="encounters">Encounters</TabsTrigger>
+          <TabsTrigger value="audit">Audit trail</TabsTrigger>
         </TabsList>
 
       <TabsContent value="overview" className="mt-4">
@@ -391,6 +396,31 @@ export default async function PatientProfilePage({
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="encounters" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle>Encounter history</CardTitle><CardDescription>Clinical encounters connected to this patient record.</CardDescription></CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              {patientEncounters.map((encounter) => (
+                <div key={encounter.id} className="flex flex-wrap items-center gap-3 rounded-lg border p-4">
+                  <div className="flex-1"><p className="font-medium">{encounter.chiefComplaint}</p><p className="text-sm text-muted-foreground">{encounter.date} · {encounter.doctor} · {encounter.department}</p></div>
+                  <StatusBadge status={encounter.status} />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="audit" className="mt-4">
+          <Card>
+            <CardHeader><CardTitle>Audit trail</CardTitle><CardDescription>Traceable activity for this patient and related encounters.</CardDescription></CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {patientAuditEvents.map((event) => (
+                <div key={event.id} className="flex gap-3 border-b pb-4 last:border-0 last:pb-0"><div className="mt-1 size-2 rounded-full bg-primary" /><div><p className="text-sm font-medium">{event.summary}</p><p className="text-xs text-muted-foreground">{event.actor} · {event.occurredAt} · {event.action}</p></div></div>
+              ))}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </>

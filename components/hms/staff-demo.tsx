@@ -12,7 +12,7 @@ import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/in
 import { staff, initials } from "@/lib/data"
 import { toast } from "sonner"
 
-export default function StaffPage() {
+export function StaffDemo() {
   const [query, setQuery] = useState("")
   const [tab, setTab] = useState("all")
 

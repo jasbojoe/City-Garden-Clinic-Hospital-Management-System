@@ -19,9 +19,19 @@ import {
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { navItems } from "@/components/hms/nav"
+import { signOutAction } from "@/app/auth/actions"
 
-export function AppSidebar() {
+export function AppSidebar({ profile }: { profile?: { name: string; role: string } }) {
   const pathname = usePathname()
+  const name = profile?.name ?? "Dr. Elena Vasquez"
+  const role = profile?.role ?? "Administrator"
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
 
   return (
     <Sidebar collapsible="icon">
@@ -86,36 +96,32 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              tooltip="Dr. Elena Vasquez"
+              tooltip={name}
               render={
                 <Link href="/settings">
                   <Avatar className="size-8">
                     <AvatarFallback className="bg-accent text-accent-foreground text-xs">
-                      EV
+                      {initials}
                     </AvatarFallback>
                   </Avatar>
                   <span className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="text-sm font-medium">
-                      Dr. Elena Vasquez
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Administrator
-                    </span>
+                    <span className="text-sm font-medium">{name}</span>
+                    <span className="text-xs text-muted-foreground">{role}</span>
                   </span>
                 </Link>
               }
             />
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Sign out"
-              render={
-                <Link href="/">
-                  <LogOut />
-                  <span>Sign out</span>
-                </Link>
-              }
-            />
+            <form action={signOutAction} className="w-full">
+              <SidebarMenuButton
+                tooltip="Sign out"
+                render={<button type="submit" />}
+              >
+                <LogOut />
+                <span>Sign out</span>
+              </SidebarMenuButton>
+            </form>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

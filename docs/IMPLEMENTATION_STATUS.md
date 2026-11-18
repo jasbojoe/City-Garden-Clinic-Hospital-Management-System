@@ -9,36 +9,23 @@
 
 ## Not implemented or unverified
 
-- No administrator account was invented or provisioned. Do not consider bootstrap complete until the manual steps below are performed by an authorized project operator.
-- Staff invitation, resend, department/facility assignment, role management, suspension/deactivation, and staff permission UI are not implemented. The current Staff page still shows demo data.
+- The clinic-authorized initial Super Administrator is provisioned. A live aggregate check found one active staff profile, one `super_administrator` assignment, and one bootstrap audit event. The operator confirmed the account is verified, assigned to `CGC-FRE`, and the one-time approval marker was consumed. Do not rerun bootstrap or modify/recreate this account.
+- Staff administration is implemented in the `v0/phase-2c-staff-management` feature branch: scoped directory/profile management, invitation and resend actions, primary facility/department assignment, role assignment, suspension/reactivation, and permission-gated department creation. The `staff_management_admin` migration was applied and its execute grants/search path verified. The follow-up `staff_invite_preflight` migration call returned an MCP error and its live status could not be confirmed; the invite action fails closed before sending if that preflight RPC is unavailable. No staff invitation was sent and no new Auth or staff account was created.
 - Patient profile edit, identifier/contact/allergy management UI and registration-history UI are not implemented. The new database RPCs exist but are not yet called by the application.
-- No active administrator/receptionist/doctor/nurse/cashier test accounts exist in this task. Login, logout, recovery, reset, session refresh, suspended-user denial, protected routes, RLS isolation, role escalation attempts, CRUD, and audit row contents are not end-to-end tested.
+- The operator-provisioned Super Administrator exists, but administrator login was not tested here because no credentials or authenticated browser session were provided. No synthetic staff accounts were created. Logout, invitation delivery, role escalation, suspension, RLS isolation, and staff audit content are not end-to-end tested.
 - Supabase Auth's public-signup configuration cannot be established from the connected database schema/API used here. Do not enable live backend mode until an operator verifies it is off.
 - Clinical, admissions, appointment, laboratory, pharmacy, billing, and other modules remain demo/unconnected. The app is not approved for real patient information or clinical production use.
 
-## Required one-time administrator setup (manual; not performed)
+## Initial administrator setup
 
-1. In Supabase Dashboard for project `pxsgqfgrokblrsyjsypt`, open **Authentication → Sign In / Providers → User Signups** and verify **Allow new users to sign up** is disabled. If it is enabled, disable it before continuing. This setting must not be inferred from the UI hiding a sign-up link.
-2. Under **Authentication → Users**, invite only the explicitly approved initial administrator's real email. Do not create or share a password. The recipient must accept/verify the invitation so `email_confirmed_at` is set.
-3. Using a trusted operator-only Supabase Auth Admin API client (never browser code), set this account's `app_metadata` key `cgc_initial_admin_authorized` to the string `true`. Do not put the service-role key in chat, source control, browser bundles, or an untrusted script. Record the invited user's UUID and verify the email is confirmed.
-4. In the Supabase SQL Editor, execute the following transaction, replacing the UUID with the verified, approved account UUID:
-
-   ```sql
-   begin;
-   select set_config('request.jwt.claim.role', 'service_role', true);
-   select public.bootstrap_first_super_administrator('00000000-0000-0000-0000-000000000000'::uuid);
-   commit;
-   ```
-
-   The transaction must return the same user UUID. If it errors, do not retry with another identity; investigate the setup state. The procedure is atomic and one-time. It creates the active staff profile, primary facility assignment, super-administrator role, audit row, and removes the one-time approval marker.
-5. Confirm the account can sign in and that its `staff_profiles.status` is active and a `bootstrap` row exists in `audit_logs`. Only then begin authorized role-based testing.
-
-The manual sequence above is a hard gate: it has not been executed here, and no authenticated CRUD or E2E success is claimed.
+The one-time bootstrap is complete. Do not run `bootstrap_first_super_administrator` again, create a second Super Administrator, or edit the initial administrator through staff-management workflows. The initial account remains protected in the staff-management database functions.
 
 ## Applied migration status
 
 - `202611170006_patient_management`: applied successfully through Supabase MCP.
 - `202611170007_bootstrap_null_guard`: applied successfully through Supabase MCP.
+- `202611180001_staff_management`: applied successfully through Supabase MCP; RPC ACLs and fixed `search_path` were verified.
+- `202611180002_staff_invite_preflight`: application and live state could not be confirmed after the Supabase MCP returned an unhandled error. Invitation code checks this RPC first and sends no email if it is missing.
 - Existing migrations `foundation_security`, `foreign_key_indexes`, `patient_registration`, `patient_registry_hardening`, and `patient_registration_idempotency` were present before this task.
 
 ## Security advisor findings
@@ -49,9 +36,9 @@ The manual sequence above is a hard gate: it has not been executed here, and no 
 
 ## Validation
 
-- `pnpm typecheck`: passed after excluding a malformed generated `.next/dev/types/validator.ts` artifact; `next build` type validation also passed.
+- `pnpm exec next typegen && pnpm typecheck`: passed after refreshing generated route types for the new `/staff` route group.
 - `pnpm build`: passed.
 - Supabase migrations `patient_management` and `bootstrap_null_guard`: applied successfully.
 - Live grant check: bootstrap execution is denied to `anon` and `authenticated`, allowed to `service_role`, and retains `search_path=""`.
-- Live aggregate check: no super-administrator has been provisioned. Authenticated role has no INSERT/UPDATE/DELETE privileges on `audit_logs` and no direct UPDATE on `patient_identifiers`.
+- Live aggregate check: one active staff profile, one `super_administrator` assignment, and one bootstrap audit event. Authenticated role has no INSERT/UPDATE/DELETE privileges on `audit_logs` and no direct UPDATE on `patient_identifiers`.
 - No authenticated tests, RLS tests, patient CRUD tests, audit event-content verification, browser workflow checks, or role-matrix tests have been run. No synthetic patient or test staff account was created. The new RPC behavior has not been called with patient or staff records.

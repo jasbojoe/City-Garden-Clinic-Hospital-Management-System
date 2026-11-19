@@ -9,8 +9,8 @@
 
 ## Not implemented or unverified
 
-- The clinic-authorized initial Super Administrator is provisioned. A live aggregate check found one active staff profile, one `super_administrator` assignment, and one bootstrap audit event. The operator confirmed the account is verified, assigned to `CGC-FRE`, and the one-time approval marker was consumed. Do not rerun bootstrap or modify/recreate this account.
-- Staff administration is implemented in the `v0/phase-2c-staff-management` feature branch: scoped directory/profile management, invitation and resend actions, primary facility/department assignment, role assignment, suspension/reactivation, and permission-gated department creation. The `staff_management_admin` migration was applied and its execute grants/search path verified. The follow-up `staff_invite_preflight` migration call returned an MCP error and its live status could not be confirmed; the invite action fails closed before sending if that preflight RPC is unavailable. No staff invitation was sent and no new Auth or staff account was created.
+- The clinic-authorized initial Super Administrator remains unchanged. Read-only aggregate checks on 2026-11-19 found one active Super Administrator profile linked to an email-confirmed Auth account, with `staff.read`, `staff.invite`, `staff.roles.assign`, `staff.update`, and `departments.manage`. This confirms database/Auth/role state, not successful login. The current browser preview is in demo mode, so login and access to the real Staff Management interface remain unverified. Do not rerun bootstrap or modify/recreate this account.
+- Staff administration is implemented in the `v0/phase-2c-staff-management` feature branch: scoped directory/profile management, invitation and resend actions, primary facility/department assignment, role assignment, suspension/reactivation, and permission-gated department creation. The `staff_management_admin` and `staff_invite_preflight` migrations are now present in the live ledger. The preflight migration was applied through Supabase MCP after its dependencies and guards were checked; its live function owner, SECURITY DEFINER setting, fixed search_path, and execution grants were verified. No staff invitation was sent and no new Auth or staff account was created.
 - Patient profile edit, identifier/contact/allergy management UI and registration-history UI are not implemented. The new database RPCs exist but are not yet called by the application.
 - The operator-provisioned Super Administrator exists, but administrator login was not tested here because no credentials or authenticated browser session were provided. No synthetic staff accounts were created. Logout, invitation delivery, role escalation, suspension, RLS isolation, and staff audit content are not end-to-end tested.
 - Supabase Auth's public-signup configuration cannot be established from the connected database schema/API used here. Do not enable live backend mode until an operator verifies it is off.
@@ -22,23 +22,36 @@ The one-time bootstrap is complete. Do not run `bootstrap_first_super_administra
 
 ## Applied migration status
 
-- `202611170006_patient_management`: applied successfully through Supabase MCP.
-- `202611170007_bootstrap_null_guard`: applied successfully through Supabase MCP.
-- `202611180001_staff_management`: applied successfully through Supabase MCP; RPC ACLs and fixed `search_path` were verified.
-- `202611180002_staff_invite_preflight`: application and live state could not be confirmed after the Supabase MCP returned an unhandled error. Invitation code checks this RPC first and sends no email if it is missing.
-- Existing migrations `foundation_security`, `foreign_key_indexes`, `patient_registration`, `patient_registry_hardening`, and `patient_registration_idempotency` were present before this task.
+Live Supabase migration ledger snapshot from 2026-11-19:
 
-## Security advisor findings
+- `20261117012323` — `foundation_security`
+- `20261117015320` — `foreign_key_indexes`
+- `20261117015357` — `patient_registration`
+- `20261117015517` — `unused`
+- `20261117022400` — `patient_registry_hardening`
+- `20261117022447` — `patient_registration_idempotency`
+- `20261117131619` — `patient_management` (repository migration `202611170006_patient_management`)
+- `20261117131727` — `bootstrap_null_guard` (repository migration `202611170007_bootstrap_null_guard`)
+- `20261118162110` — `staff_management_admin` (repository migration `202611180001_staff_management`)
+- `20261119150202` — `staff_invite_preflight` (repository migration `202611180002_staff_invite_preflight.sql`)
 
-- Seven authenticated-callable `SECURITY DEFINER` RPC warnings remain; they are intentionally exposed but permission-checked and use fixed empty search paths. They require review with real test roles.
-- One RLS-enabled/no-policy information finding remains for the private idempotency table; it has no API-role grants and intentionally has no caller policy.
-- Performance advisor still reports RLS init-plan warnings (8), unused-index notices, and multiple-permissive-policy notices. These were not changed because no role-based regression suite is available.
+The invitation-preflight migration was absent from the ledger and its function absent from `pg_proc` before application. Its referenced columns, RLS state, and permission-helper definitions were checked; the migration was then applied through Supabase MCP and verified in both the ledger and live catalog. The preflight and staff RPCs are owned by `postgres`, are `SECURITY DEFINER`, pin `search_path=""`, deny `anon`, and grant execution to `authenticated` (the live ACL also includes `service_role`; no `PUBLIC` ACL entry). The preflight checks active facility/department, valid non-Super-Administrator roles, duplicate emails, and `staff.invite` plus `staff.roles.assign` before the app sends an Auth invitation. Earlier ledger entries were checked for presence only in this task; their complete database objects were not re-audited.
+
+## Security advisor findings — 2026-11-19
+
+- The Supabase security advisor reports 11 authenticated-callable `SECURITY DEFINER` RPC warnings, including the staff invitation preflight. Staff RPCs reviewed here use fixed empty search paths and explicit permission checks; runtime role tests remain outstanding. [Advisor remediation](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+- The advisor reports RLS enabled without policies on `public.patient_registration_requests`. Live table grants were limited to `postgres` and `service_role`; no direct `anon` or `authenticated` grants were present. [Advisor remediation](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy).
+- The advisor reports Supabase Auth leaked-password protection is disabled. This project-level setting was not changed as part of PR #5. [Supabase guidance](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 
 ## Validation
 
-- `pnpm exec next typegen && pnpm typecheck`: passed after refreshing generated route types for the new `/staff` route group.
-- `pnpm build`: passed.
+- `pnpm typecheck`: passed on 2026-11-19.
+- `pnpm build`: passed on 2026-11-19.
 - Supabase migrations `patient_management` and `bootstrap_null_guard`: applied successfully.
 - Live grant check: bootstrap execution is denied to `anon` and `authenticated`, allowed to `service_role`, and retains `search_path=""`.
 - Live aggregate check: one active staff profile, one `super_administrator` assignment, and one bootstrap audit event. Authenticated role has no INSERT/UPDATE/DELETE privileges on `audit_logs` and no direct UPDATE on `patient_identifiers`.
-- No authenticated tests, RLS tests, patient CRUD tests, audit event-content verification, browser workflow checks, or role-matrix tests have been run. No synthetic patient or test staff account was created. The new RPC behavior has not been called with patient or staff records.
+- No Auth-backed tests, RLS isolation tests, patient CRUD tests, audit event-content checks, role-matrix tests, or invitation/callback/suspension workflows were run. No approved synthetic staff identity was provided or created, and no invitation email was sent. A browser check of `/staff` rendered `Prototype Demo — Sample Data`; it did not reach the Supabase-backed Staff Management interface.
+- No test script, test files, or configured test runner were found. `pnpm lint` could not run because the workspace has no `eslint` executable.
+- Code review only: the invitation preflight and create RPCs both require `staff.invite` and `staff.roles.assign`, reject `super_administrator` assignment, and the update RPC prevents self role/status/facility changes and protects the existing Super Administrator. These controls have not been exercised with authenticated test identities.
+- Review caveat: Auth invitation email and the staff-profile RPC are separate systems. If email sending succeeds but profile creation fails, the action surfaces that partial state and warns not to retry, but it does not automatically reconcile or revoke the pending Auth account. Resend similarly reports an audit warning if email succeeds but audit logging fails. These failure paths remain untested and should be resolved or accepted before production release.
+- Scope review: the PR changes staff UI/actions, shared navigation, auth actions, permission constants, docs, and staff migrations; no patient registry implementation or patient migration files changed.

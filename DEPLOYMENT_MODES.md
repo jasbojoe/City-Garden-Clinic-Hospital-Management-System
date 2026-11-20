@@ -14,18 +14,16 @@ Only the exact values `demo` and `supabase` are accepted. A value that does not 
 
 ## Current Vercel configuration check
 
-The linked Vercel project was verified by ID: `prj_uI4XDCle6pEKGUelrmjQZyH7K3rA` (project name `medicare`). The current environment-variable listing did not contain `HMS_DATA_MODE`. It also showed Supabase and direct database credentials attached to Production, Preview, and Development; secret values were not read or copied into this file.
+The linked Vercel project was verified by ID: `prj_uI4XDCle6pEKGUelrmjQZyH7K3rA` (project name `medicare`, connected to this repository). Its environment mode values currently match the table above: Production `supabase`, Preview `demo`, and Development `demo`. The configured Supabase host is `pxsgqfgrokblrsyjsypt.supabase.co`, matching the active Supabase project `pxsgqfgrokblrsyjsypt`. Production has the required Supabase URL and publishable key, plus server-only credentials used by the admin client. Secret values were not read into this document or chat.
 
-Before using this configuration, scope Supabase service/secret keys and direct database credentials to Production only. Demo deployments do not need Supabase credentials. If nonproduction backend testing is later required, use an isolated nonproduction Supabase project rather than Production credentials.
+Security issue found during audit: Supabase service-role/secret/JWT credentials and direct Postgres connection credentials are also scoped to Preview and Development. Remove those nonproduction targets before creating a new Preview deployment. Public URL and publishable/anon keys are not privileged, but demo deployments do not require them; if kept for convenience, keep them out of client code except the explicitly publishable keys. If nonproduction backend testing is later required, use an isolated nonproduction Supabase project rather than Production credentials.
 
-## Configure Vercel
+## Configure Vercel safely
 
-1. Open the verified `medicare` project in Vercel and go to **Settings → Environment Variables**.
-2. Add `HMS_DATA_MODE` with value `supabase`, scoped to **Production** only.
-3. Add `HMS_DATA_MODE` with value `demo`, scoped to **Preview** and **Development**. Use separate entries if the UI requires one scope per entry.
-4. Restrict `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET`, `POSTGRES_PASSWORD`, and direct `POSTGRES_*` connection strings to Production only. Also remove Supabase URL/key variables from Preview and Development unless there is a documented nonproduction backend use case.
-5. Confirm the existing Production Supabase URL points to the intended live database and that its RLS policies and staff-permission RPCs are in place. Do not paste secret values into chat, source code, or client-side variables.
-6. Save the environment changes. Vercel environment updates apply to new deployments, not deployments that are already built.
+1. Open the verified `medicare` project in Vercel and go to **Settings → Environment Variables**. Confirm `HMS_DATA_MODE=supabase` is Production-only and `HMS_DATA_MODE=demo` is set for both Preview and Development; the current audit found these mode values already correct.
+2. Keep `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET`, and every `POSTGRES_*` variable scoped to Production only. Remove their Preview and Development targets; do not change or rotate the Production values. Public Supabase URL and publishable/anon keys are not privileged, but may also be removed from demo environments because demo mode does not need a backend connection.
+3. Confirm Production points to Supabase project `pxsgqfgrokblrsyjsypt` and has the URL, publishable key, and server-only credentials required by the application. Keep service-role/secret keys server-only; never use a `NEXT_PUBLIC_` name for them. Do not paste values into chat or source control.
+4. Save the environment changes. Vercel environment updates apply to new deployments, not deployments that are already built.
 
 ## Safe verification and redeployment
 

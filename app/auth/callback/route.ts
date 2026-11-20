@@ -1,8 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { getApplicationOrigin } from "@/lib/supabase/config"
+import { dataMode } from "@/lib/services/result"
 
 export async function GET(request: NextRequest) {
+  if (dataMode() !== 'supabase') {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
   const origin = getApplicationOrigin()
   const { searchParams } = request.nextUrl
   const requestedNext = searchParams.get("next")

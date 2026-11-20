@@ -1,8 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { dataMode } from '@/lib/services/result'
 import { getSupabasePublicConfig, isSupabaseConfigured } from '@/lib/supabase/config'
 
 export async function updateSession(request: NextRequest) {
+  if (dataMode() === 'demo') {
+    const pathname = request.nextUrl.pathname
+    if (pathname.startsWith('/auth/') && pathname !== '/auth/error') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    return NextResponse.next({ request })
+  }
+
   if (!isSupabaseConfigured()) return NextResponse.next({ request })
   const { url, key } = getSupabasePublicConfig()
   let supabaseResponse = NextResponse.next({

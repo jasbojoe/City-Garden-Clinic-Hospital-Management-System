@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { PageHeader } from "@/components/hms/page-header"
 import { StatCard } from "@/components/hms/stat-card"
 import { StatusBadge } from "@/components/hms/status-badge"
@@ -36,10 +36,12 @@ export default function DashboardPage() {
         title="Good morning, Dr. Vasquez"
         description="Here is what is happening across City Garden Clinic Hospital today."
       >
-        <Button variant="outline" render={<Link href="/reports" />}>
+        <Link href="/reports" className={buttonVariants({ variant: "outline" })}>
           View reports
-        </Button>
-        <Button render={<Link href="/patients/new" />}>New patient</Button>
+        </Link>
+        <Link href="/patients/new" className={buttonVariants()}>
+          New patient
+        </Link>
       </PageHeader>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

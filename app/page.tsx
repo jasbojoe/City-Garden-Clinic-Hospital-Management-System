@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import LoginPage from "@/components/hms/login-page"
 import { dataMode } from "@/lib/services/result"
 
@@ -19,10 +19,10 @@ export default function HomePage() {
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           Explore the hospital management workspace with sample data. This environment does not connect to live clinical records or staff-management mutations.
         </p>
-        <Button className="mt-7 w-full" size="lg" render={<Link href="/dashboard" />}>
+        <Link href="/dashboard" className={buttonVariants({ className: "mt-7 w-full", size: "lg" })}>
           Open demo workspace
           <ArrowRight data-icon="inline-end" />
-        </Button>
+        </Link>
         <p className="mt-4 text-center text-xs text-muted-foreground">
           Demo records are sample-only and read-only.
         </p>

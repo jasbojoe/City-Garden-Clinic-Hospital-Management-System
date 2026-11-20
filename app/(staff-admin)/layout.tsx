@@ -6,6 +6,8 @@ import { Topbar } from '@/components/hms/topbar'
 import { dataMode } from '@/lib/services/result'
 import { createClient } from '@/lib/supabase/server'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StaffAdminLayout({ children }: { children: ReactNode }) {
   let profile: { name: string; role: string } | undefined
 
@@ -32,6 +34,11 @@ export default async function StaffAdminLayout({ children }: { children: ReactNo
       const role = Array.isArray(assignment.roles) ? assignment.roles[0] : assignment.roles
       return role ? [role.name] : []
     })
+
+    if (roleNames.length === 0) {
+      await supabase.auth.signOut()
+      redirect('/?access=denied')
+    }
 
     profile = {
       name: [staff.first_name, staff.middle_name, staff.last_name].filter(Boolean).join(' ') || 'Staff member',

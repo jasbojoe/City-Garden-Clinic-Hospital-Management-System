@@ -38,10 +38,19 @@ function useTitle() {
 
 const dashboardRoles = ["Admin Doctor", "Reception", "Nurse", "Laboratory", "Pharmacy", "Billing"]
 
-export function Topbar() {
+export function Topbar({ profile }: { profile?: { name: string; role: string } }) {
   const title = useTitle()
   const router = useRouter()
   const [role, setRole] = useState("Admin Doctor")
+  const accountName = profile?.name ?? "Dr. Elena Vasquez"
+  const accountRole = profile?.role ?? role
+  const accountInitials = accountName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
 
   async function handleSignOut() {
     const supabase = createClient()
@@ -60,51 +69,55 @@ export function Topbar() {
       <Separator orientation="vertical" className="h-6" />
       <h1 className="text-base font-semibold text-foreground">{title}</h1>
       <span className="hidden items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground lg:inline-flex">
-        <span className="size-1.5 rounded-full bg-amber-500" />
-        Prototype Demo — Sample Data
+        <span className={`size-1.5 rounded-full ${profile ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+        {profile ? 'Secure Staff Workspace' : 'Prototype Demo — Sample Data'}
       </span>
 
       <div className="ml-auto flex items-center gap-2">
-        <InputGroup className="hidden w-64 md:flex">
-          <InputGroupInput placeholder="Search patients, records..." />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-        </InputGroup>
+        {!profile ? (
+          <>
+            <InputGroup className="hidden w-64 md:flex">
+              <InputGroupInput placeholder="Search patients, records..." />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+            </InputGroup>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="outline" className="hidden h-9 gap-2 px-3 sm:inline-flex" aria-label="Switch dashboard role">
-                <ShieldCheck data-icon="inline-start" />
-                <span>{role}</span>
-                <ChevronDown data-icon="inline-end" />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>View as role</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {dashboardRoles.map((option) => (
-                <DropdownMenuItem key={option} onClick={() => { setRole(option); toast.success(`Dashboard switched to ${option}`) }}>
-                  <ShieldCheck />
-                  {option}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="outline" className="hidden h-9 gap-2 px-3 sm:inline-flex" aria-label="Switch dashboard role">
+                    <ShieldCheck data-icon="inline-start" />
+                    <span>{role}</span>
+                    <ChevronDown data-icon="inline-end" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel>View as role</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {dashboardRoles.map((option) => (
+                    <DropdownMenuItem key={option} onClick={() => { setRole(option); toast.success(`Dashboard switched to ${option}`) }}>
+                      <ShieldCheck />
+                      {option}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative text-muted-foreground"
-          aria-label="Notifications"
-        >
-          <Bell />
-          <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-card" />
-        </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-muted-foreground"
+              aria-label="Notifications"
+            >
+              <Bell />
+              <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-card" />
+            </Button>
+          </>
+        ) : null}
 
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -115,18 +128,18 @@ export function Topbar() {
                 aria-label="Account menu"
               >
                 <Avatar className="size-7">
-                  <AvatarFallback className="bg-accent text-accent-foreground text-xs">
-                    EV
-                  </AvatarFallback>
+                    <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+                    {accountInitials}
+                    </AvatarFallback>
                 </Avatar>
                 <span className="hidden text-sm font-medium sm:inline">
-                  Dr. Elena Vasquez
+                  {accountName}
                 </span>
               </Button>
             }
           />
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{profile ? accountRole : 'My Account'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem render={<Link href="/settings" />}>

@@ -15,6 +15,7 @@ const toneClasses: Record<Tone, string> = {
 const statusMap: Record<string, { tone: Tone; label?: string }> = {
   // patients
   active: { tone: "green" },
+  suspended: { tone: "amber" },
   admitted: { tone: "blue" },
   discharged: { tone: "slate" },
   inactive: { tone: "slate" },

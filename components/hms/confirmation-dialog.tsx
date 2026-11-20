@@ -16,6 +16,7 @@ export function ConfirmationDialog({
   title,
   description,
   confirmLabel = 'Confirm',
+  confirmVariant = 'default',
   onConfirm,
   busy = false,
 }: {
@@ -24,6 +25,7 @@ export function ConfirmationDialog({
   title: string
   description: string
   confirmLabel?: string
+  confirmVariant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive' | 'link'
   onConfirm: () => void
   busy?: boolean
 }) {
@@ -38,7 +40,7 @@ export function ConfirmationDialog({
           <Button variant="outline" disabled={busy} onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button disabled={busy} onClick={onConfirm}>
+          <Button variant={confirmVariant} disabled={busy} onClick={onConfirm}>
             {busy ? 'Working…' : confirmLabel}
           </Button>
         </DialogFooter>
